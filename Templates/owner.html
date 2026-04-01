@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Owner Dashboard — ParkEase</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0a0a0f;--surface:#13131a;--card:#1a1a24;--border:#2a2a38;--accent:#f0c040;--text:#f0f0f0;--muted:#888;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--accent);}
+.nav-right{display:flex;align-items:center;gap:1rem;}
+.badge{background:rgba(240,192,64,0.15);color:var(--accent);font-size:0.75rem;font-weight:600;font-family:'Syne',sans-serif;padding:3px 10px;border-radius:99px;border:1px solid rgba(240,192,64,0.3);}
+.logout{font-size:0.85rem;color:var(--muted);text-decoration:none;padding:6px 14px;border:1px solid var(--border);border-radius:8px;}
+.logout:hover{border-color:var(--muted);}
+main{max-width:900px;margin:0 auto;padding:2rem 1.5rem;}
+h2{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;margin-bottom:0.25rem;}
+.sub{color:var(--muted);font-size:0.9rem;margin-bottom:2rem;}
+
+.add-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:1.5rem;margin-bottom:2.5rem;}
+.add-card h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin-bottom:1.25rem;color:var(--accent);}
+.form-row{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end;}
+label{display:block;font-size:0.75rem;font-weight:500;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.04em;}
+input[type=text],input[type=number]{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.7rem 0.9rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.9rem;outline:none;}
+input:focus{border-color:var(--accent);}
+.btn{padding:0.7rem 1.4rem;background:var(--accent);color:#0a0a0f;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;border:none;border-radius:10px;cursor:pointer;white-space:nowrap;}
+.btn:hover{opacity:0.88;}
+
+.section-title{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:1rem;}
+.fac-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.fac-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem;transition:border-color 0.2s;}
+.fac-card:hover{border-color:rgba(240,192,64,0.4);}
+.fac-name{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;margin-bottom:0.5rem;}
+.fac-stats{display:flex;gap:10px;margin-bottom:1rem;}
+.stat{background:var(--surface);border-radius:8px;padding:8px 12px;flex:1;text-align:center;}
+.stat-n{font-size:1.2rem;font-weight:600;color:var(--accent);}
+.stat-l{font-size:0.7rem;color:var(--muted);margin-top:2px;}
+.rate-tag{font-size:0.82rem;color:var(--muted);margin-bottom:1rem;}
+.rate-tag span{color:var(--text);font-weight:500;}
+.view-btn{display:block;text-align:center;padding:0.55rem;border:1px solid var(--border);border-radius:9px;color:var(--text);text-decoration:none;font-size:0.85rem;font-family:'Syne',sans-serif;font-weight:600;transition:all 0.2s;}
+.view-btn:hover{border-color:var(--accent);color:var(--accent);}
+.btn-row{display:flex;gap:8px;margin-top:4px;}
+.delete-btn{flex:1;text-align:center;padding:0.55rem;border:1px solid #e05050;background:transparent;border-radius:9px;color:#e07070;font-size:0.82rem;font-family:'Syne',sans-serif;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.delete-btn:hover{background:rgba(220,60,60,0.12);border-color:#e07070;}
+.empty{color:var(--muted);font-size:0.95rem;padding:2rem 0;}
+@media(max-width:600px){.form-row{grid-template-columns:1fr 1fr;}.form-row>*:last-child{grid-column:1/-1;}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">ParkEase</div>
+  <div class="nav-right">
+    <span style="font-size:0.9rem;color:var(--muted);">{{ username }}</span>
+    <span class="badge">Owner</span>
+    <a class="logout" href="/logout">Logout</a>
+  </div>
+</nav>
+<main>
+  <h2>My Parking Facilities</h2>
+  <p class="sub">Add and manage your parking locations</p>
+
+  <div class="add-card">
+    <h3>+ Add New Facility</h3>
+    <form action="/owner/add_facility" method="POST">
+      <div class="form-row">
+        <div>
+          <label>Facility Name</label>
+          <input type="text" name="name" placeholder="e.g. Downtown Parking" required/>
+        </div>
+        <div>
+          <label>Total Slots</label>
+          <input type="number" name="total_slots" value="10" min="1" max="200" required/>
+        </div>
+        <div>
+          <label>Rate (Rs/hr)</label>
+          <input type="number" name="rate" value="20" min="1" required/>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="btn" type="submit">Add</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="section-title">Your Facilities ({{ facilities|length }})</div>
+  {% if facilities %}
+  <div class="fac-grid">
+    {% for fid, f in facilities.items() %}
+    {% set occupied = f.slots.values()|selectattr('none','equalto',false)|list|length %}
+    {% set occ = namespace(count=0) %}
+    {% for s in f.slots.values() %}{% if s is not none %}{% set occ.count = occ.count + 1 %}{% endif %}{% endfor %}
+    <div class="fac-card">
+      <div class="fac-name">{{ f.name }}</div>
+      <div class="fac-stats">
+        <div class="stat"><div class="stat-n">{{ f.total_slots - occ.count }}</div><div class="stat-l">Free</div></div>
+        <div class="stat"><div class="stat-n">{{ occ.count }}</div><div class="stat-l">Occupied</div></div>
+        <div class="stat"><div class="stat-n">{{ f.total_slots }}</div><div class="stat-l">Total</div></div>
+      </div>
+      <div class="rate-tag">Rate: <span>Rs. {{ f.rate }}/hr</span></div>
+      <div class="btn-row">
+        <a class="view-btn" style="flex:1;" href="/owner/facility/{{ fid }}">View Slots</a>
+        <form action="/owner/delete_facility/{{ fid }}" method="POST" style="flex:1;" onsubmit="return confirm('Delete {{ f.name }}? This cannot be undone.');">
+          <button class="delete-btn" style="width:100%;" type="submit">Delete</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">No facilities yet. Add your first one above.</p>
+  {% endif %}
+</main>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Search Results — ParkEase</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0a0a0f;--surface:#13131a;--card:#1a1a24;--border:#2a2a38;--accent:#f0c040;--text:#f0f0f0;--muted:#888;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--accent);}
+.back{font-size:0.85rem;color:var(--muted);text-decoration:none;padding:6px 14px;border:1px solid var(--border);border-radius:8px;}
+.back:hover{border-color:var(--muted);}
+main{max-width:860px;margin:0 auto;padding:2rem 1.5rem;}
+h2{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;margin-bottom:0.25rem;}
+.sub{color:var(--muted);font-size:0.9rem;margin-bottom:2rem;}
+
+.search-bar{display:flex;gap:12px;margin-bottom:2rem;}
+.search-bar input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1.1rem;color:var(--text);font-size:0.95rem;outline:none;font-family:'DM Sans',sans-serif;}
+.search-bar input:focus{border-color:var(--accent);}
+.search-bar button{padding:0.75rem 1.4rem;background:var(--accent);color:#0a0a0f;font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;border:none;border-radius:12px;cursor:pointer;}
+
+.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.25rem;display:flex;flex-direction:column;gap:10px;transition:border-color 0.2s;}
+.result-card:hover{border-color:rgba(240,192,64,0.3);}
+.result-card.full{opacity:0.5;}
+.fac-name{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;}
+.avail-row{display:flex;align-items:center;gap:8px;}
+.avail-dot{width:8px;height:8px;border-radius:50%;}
+.green{background:#2ecc71;}
+.red{background:#e74c3c;}
+.avail-text{font-size:0.85rem;color:var(--muted);}
+.avail-text span{font-weight:500;}
+.rate-info{font-size:0.85rem;color:var(--muted);}
+.rate-info span{color:var(--text);}
+.book-btn{padding:0.6rem;background:var(--accent);color:#0a0a0f;font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;border:none;border-radius:10px;cursor:pointer;text-align:center;text-decoration:none;display:block;transition:opacity 0.2s;}
+.book-btn:hover{opacity:0.85;}
+.full-tag{text-align:center;font-size:0.85rem;color:var(--muted);padding:0.5rem;}
+.empty{color:var(--muted);font-size:0.95rem;padding:2rem 0;}
+
+/* ── Modal ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);z-index:100;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2rem;width:100%;max-width:400px;position:relative;animation:modalIn 0.25s ease;}
+@keyframes modalIn{from{opacity:0;transform:translateY(18px) scale(0.97);}to{opacity:1;transform:none;}}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1;}
+.modal-close:hover{color:var(--text);}
+.modal-title{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;margin-bottom:0.25rem;}
+.modal-sub{font-size:0.82rem;color:var(--muted);margin-bottom:1.5rem;}
+.m-field{margin-bottom:1.1rem;}
+.m-field label{display:block;font-size:0.78rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
+.m-field input[type=time]{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0.7rem 1rem;color:var(--text);font-family:'DM Sans',sans-serif;font-size:0.95rem;outline:none;transition:border 0.2s;color-scheme:dark;}
+.m-field input[type=time]:focus{border-color:var(--accent);}
+.modal-duration{background:rgba(240,192,64,0.07);border:1px solid rgba(240,192,64,0.2);border-radius:10px;padding:0.7rem 1rem;font-size:0.85rem;color:var(--muted);margin-bottom:1.25rem;min-height:36px;}
+.modal-duration span{color:var(--accent);font-weight:600;}
+.confirm-btn{width:100%;padding:0.85rem;background:var(--accent);color:#0a0a0f;font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;border:none;border-radius:10px;cursor:pointer;transition:opacity 0.2s;}
+.confirm-btn:hover{opacity:0.88;}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">ParkEase</div>
+  <a class="back" href="/customer">← Dashboard</a>
+</nav>
+<main>
+  <h2>Search Results</h2>
+  <p class="sub">Showing results for "{{ query }}"</p>
+
+  <form class="search-bar" action="/customer/search" method="GET">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search again..."/>
+    <button type="submit">Search</button>
+  </form>
+
+  {% if results %}
+  <div class="result-grid">
+    {% for f in results %}
+    <div class="result-card {% if f.available == 0 %}full{% endif %}">
+      <div class="fac-name">{{ f.name }}</div>
+      <div class="avail-row">
+        <div class="avail-dot {% if f.available > 0 %}green{% else %}red{% endif %}"></div>
+        <div class="avail-text">
+          {% if f.available > 0 %}<span>{{ f.available }}</span> slots available{% else %}<span>Full</span>{% endif %}
+          &nbsp;/ {{ f.total_slots }} total
+        </div>
+      </div>
+      <div class="rate-info">Rate: <span>Rs. {{ f.rate }}/hr</span></div>
+      {% if f.available > 0 %}
+      <button class="book-btn" type="button" onclick="openModal('{{ f.fid }}','{{ f.name }}','{{ f.rate }}')">Book a Slot</button>
+      {% else %}
+      <div class="full-tag">No slots available</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">No facilities found for "{{ query }}". Try a different name.</p>
+  {% endif %}
+</main>
+
+<!-- Booking Modal -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="modalFacName">Book a Slot</div>
+    <div class="modal-sub" id="modalFacRate"></div>
+
+    <form id="bookingForm" action="" method="POST">
+      <input type="hidden" name="start_time" id="hiddenStart"/>
+      <input type="hidden" name="end_time" id="hiddenEnd"/>
+
+      <div class="m-field">
+        <label>Start Time</label>
+        <input type="time" id="startTime" required onchange="calcDuration()"/>
+      </div>
+      <div class="m-field">
+        <label>End Time</label>
+        <input type="time" id="endTime" required onchange="calcDuration()"/>
+      </div>
+
+      <div class="modal-duration" id="durationInfo">Select start &amp; end time to see estimated cost.</div>
+
+      <button class="confirm-btn" type="button" onclick="submitBooking()">Confirm Booking</button>
+    </form>
+  </div>
+</div>
+
+<script>
+let currentRate = 0;
+
+function openModal(fid, name, rate){
+  currentRate = parseFloat(rate);
+  document.getElementById('modalFacName').textContent = name;
+  document.getElementById('modalFacRate').textContent = 'Rate: Rs. ' + rate + '/hr';
+  document.getElementById('bookingForm').action = '/customer/book/' + fid;
+  // Pre-fill with current time rounded to nearest 30 min
+  const now = new Date();
+  now.setSeconds(0,0);
+  const mins = now.getMinutes();
+  now.setMinutes(mins < 30 ? 30 : 60, 0, 0);
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes() % 60).padStart(2,'0');
+  // end = start + 1 hour
+  const end = new Date(now.getTime() + 3600000);
+  const eh = String(end.getHours()).padStart(2,'0');
+  const em = String(end.getMinutes()).padStart(2,'0');
+  document.getElementById('startTime').value = hh+':'+mm;
+  document.getElementById('endTime').value = eh+':'+em;
+  calcDuration();
+  document.getElementById('bookingModal').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('bookingModal').classList.remove('open');
+}
+
+function calcDuration(){
+  const s = document.getElementById('startTime').value;
+  const e = document.getElementById('endTime').value;
+  const info = document.getElementById('durationInfo');
+  if(!s || !e){ info.innerHTML='Select start &amp; end time to see estimated cost.'; return; }
+  const [sh,sm] = s.split(':').map(Number);
+  const [eh,em] = e.split(':').map(Number);
+  let diff = (eh*60+em) - (sh*60+sm);
+  if(diff <= 0){ info.innerHTML='<span style="color:#e07070">End time must be after start time.</span>'; return; }
+  const hrs = diff/60;
+  const cost = Math.ceil(hrs) * currentRate;
+  info.innerHTML='Duration: <span>'+hrs.toFixed(1)+' hrs</span> &nbsp;·&nbsp; Est. Cost: <span>Rs. '+cost.toFixed(0)+'</span>';
+}
+
+function submitBooking(){
+  const s = document.getElementById('startTime').value;
+  const e = document.getElementById('endTime').value;
+  if(!s || !e){ alert('Please select both start and end time.'); return; }
+  const [sh,sm] = s.split(':').map(Number);
+  const [eh,em] = e.split(':').map(Number);
+  if((eh*60+em) <= (sh*60+sm)){ alert('End time must be after start time.'); return; }
+  document.getElementById('hiddenStart').value = s;
+  document.getElementById('hiddenEnd').value = e;
+  document.getElementById('bookingForm').submit();
+}
+
+// Close modal on overlay click
+document.getElementById('bookingModal').addEventListener('click', function(e){
+  if(e.target === this) closeModal();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>{{ facility.name }} — ParkEase</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0a0a0f;--surface:#13131a;--card:#1a1a24;--border:#2a2a38;--accent:#f0c040;--text:#f0f0f0;--muted:#888;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+nav{background:var(--surface);border-bottom:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;color:var(--accent);}
+.back{font-size:0.85rem;color:var(--muted);text-decoration:none;padding:6px 14px;border:1px solid var(--border);border-radius:8px;}
+.back:hover{border-color:var(--muted);}
+main{max-width:900px;margin:0 auto;padding:2rem 1.5rem;}
+h2{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;}
+.sub{color:var(--muted);font-size:0.88rem;margin-top:4px;margin-bottom:2rem;}
+.stats-row{display:flex;gap:12px;margin-bottom:2rem;flex-wrap:wrap;}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.5rem;min-width:110px;}
+.stat-n{font-size:1.6rem;font-weight:700;color:var(--accent);}
+.stat-l{font-size:0.75rem;color:var(--muted);margin-top:2px;}
+.legend{display:flex;gap:16px;margin-bottom:1.25rem;font-size:0.82rem;color:var(--muted);}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle;}
+.dot-free{background:#2ecc71;}
+.dot-occ{background:#f0c040;}
+.slot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+.slot{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem;transition:border-color 0.2s;}
+.slot.occupied{border-color:rgba(240,192,64,0.5);background:rgba(240,192,64,0.05);}
+.slot-num{font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;color:var(--muted);margin-bottom:6px;}
+.slot-status{font-size:0.85rem;font-weight:500;}
+.free-text{color:#2ecc71;}
+.occ-text{color:var(--accent);}
+.vehicle{font-size:0.8rem;color:var(--muted);margin-top:4px;}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">ParkEase</div>
+  <a class="back" href="/owner">← Back</a>
+</nav>
+<main>
+  <h2>{{ facility.name }}</h2>
+  <p class="sub">Rate: Rs. {{ facility.rate }}/hr &nbsp;·&nbsp; {{ facility.total_slots }} total slots</p>
+
+  {% set occ = namespace(count=0) %}
+  {% for s in facility.slots.values() %}{% if s is not none %}{% set occ.count = occ.count + 1 %}{% endif %}{% endfor %}
+
+  <div class="stats-row">
+    <div class="stat"><div class="stat-n">{{ facility.total_slots - occ.count }}</div><div class="stat-l">Available</div></div>
+    <div class="stat"><div class="stat-n">{{ occ.count }}</div><div class="stat-l">Occupied</div></div>
+    <div class="stat"><div class="stat-n">{{ facility.total_slots }}</div><div class="stat-l">Total</div></div>
+  </div>
+
+  <div class="legend">
+    <span><span class="dot dot-free"></span>Available</span>
+    <span><span class="dot dot-occ"></span>Occupied</span>
+  </div>
+
+  <div class="slot-grid">
+    {% for num, booking_id in facility.slots.items() %}
+    <div class="slot {% if booking_id %}occupied{% endif %}">
+      <div class="slot-num">Slot {{ num }}</div>
+      {% if booking_id %}
+        <div class="slot-status occ-text">Occupied</div>
+        {% if booking_id in bookings %}
+        <div class="vehicle">{{ bookings[booking_id].customer }}</div>
+        {% endif %}
+      {% else %}
+        <div class="slot-status free-text">Available</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</main>
+</body>
+</html>
