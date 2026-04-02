@@ -1,0 +1,33 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Database
+*.db
+
+# IDE
+.vscode/
+.idea/
+
+# Procfile (deployment config)
+procfile
+Procfile
+
+# Shell scripts
+run.sh
+
+# Environment variables
+.env

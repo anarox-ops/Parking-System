@@ -350,6 +350,7 @@ def book_slot(fid):
             return redirect(url_for("customer_dashboard"))
     except ValueError:
         start_time = datetime.now()
+        # hello 
         end_time = None
 
     # Find first free slot
