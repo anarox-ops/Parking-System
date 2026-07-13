@@ -1,6 +1,6 @@
-# 🚗 ParkEase — Smart Parking Management System
+# 🚗 Park IT — Smart Parking Management System
 
-ParkEase is a lightweight, responsive web application built with **Flask** and **SQLite3** designed to make parking slot reservation and management seamless for both **Facility Owners** and **Customers**. 
+Park IT is a lightweight, responsive web application built with **Flask** and **SQLite3** designed to make parking slot reservation and management seamless for both **Facility Owners** and **Customers**. 
 
 ---
 
@@ -123,7 +123,7 @@ Once started, the application will run on **`http://127.0.0.1:5001`**.
 
 ```text
 ├── app.py              # Main Flask application logic, helper methods, and routes
-├── parkease.db         # SQLite3 database (automatically generated on first run)
+├── parkit.db           # SQLite3 database (automatically generated on first run)
 ├── requirements.txt    # Application package dependencies
 ├── run.sh              # Bash script to run the local server on port 5001
 ├── procfile            # Production process configuration

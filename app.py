@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 app.secret_key = "parking_secret_123"
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "parkease.db")
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "parkit.db")
 
 
 # ─── Database helpers ──────────────────────────────────────────────────
